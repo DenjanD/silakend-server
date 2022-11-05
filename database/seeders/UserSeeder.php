@@ -16,6 +16,9 @@ class UserSeeder extends Seeder
      */
     public function run()
     {
+        // get new job id after seeding job unit
+        $newJobUnitId = DB::table('job_units')->select('unit_id')->first();
+
         $faker = Faker::create('id_ID');
  
     	for($i = 1; $i <= 50; $i++){
@@ -29,7 +32,7 @@ class UserSeeder extends Seeder
     			'address' => $faker->address,
                 'phone' => '6284728392',
                 'email' => $faker->email,
-                'unit_id' => 'e8eece22-5746-11ed-a019-d8c49710dd2f',
+                'unit_id' => $newJobUnitId->unit_id,
                 'deleted_at' => null,
                 'remember_token' => null,
                 'created_at' => Carbon::now(),

@@ -21,6 +21,7 @@ class CreateUsersTable extends Migration
             $table->text('address');
             $table->string('phone', 14);
             $table->string('email', 60)->unique();
+            $table->string('status',15)->default('active');
 
             $table->foreignUuid('unit_id');
 
