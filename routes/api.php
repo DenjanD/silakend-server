@@ -2,6 +2,7 @@
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\AuthController;
 use App\Http\Controllers\UserController;
 
 /*
@@ -15,11 +16,20 @@ use App\Http\Controllers\UserController;
 |
 */
 
-Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
-    return $request->user();
+// Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
+//     return $request->user();
+// });
+
+/* Auth Routes */
+Route::post('login', [AuthController::class, 'login'])->name('login');
+
+Route::group(['prefix' => 'auth', 'middleware' => 'auth:sanctum'], function() {
+    Route::post('logout', [AuthController::class, 'logout']);
 });
 
-/* Users API Routes */
-Route::apiResource('users', UserController::class);
-Route::get('usersPreStoreData', [UserController::class, 'preStoreData']);
-Route::get('usersPreUpdateData/{id}', [UserController::class, 'preUpdateData']);
+/* Users API Routes */ // Add auth access when not authenticated
+Route::middleware(['auth:sanctum'])->group(function() {
+    Route::apiResource('users', UserController::class);
+    Route::get('usersPreStoreData', [UserController::class, 'preStoreData']);
+    Route::get('usersPreUpdateData/{id}', [UserController::class, 'preUpdateData']);
+});
