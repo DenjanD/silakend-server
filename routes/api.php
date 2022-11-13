@@ -21,10 +21,11 @@ use App\Http\Controllers\UserController;
 // });
 
 /* Auth Routes */
-Route::post('login', [AuthController::class, 'login'])->name('login');
-
-Route::group(['prefix' => 'auth', 'middleware' => 'auth:sanctum'], function() {
-    Route::post('logout', [AuthController::class, 'logout']);
+Route::group(['prefix' => 'auth'], function() {
+    Route::post('login', [AuthController::class, 'login'])->name('login');
+    Route::middleware(['auth:sanctum'])->group(function() {
+        Route::post('logout', [AuthController::class, 'logout']);  
+    });
 });
 
 /* Users API Routes */ // Add auth access when not authenticated
