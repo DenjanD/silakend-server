@@ -4,6 +4,10 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\UserController;
+use App\Http\Controllers\RoleController;
+use App\Http\Controllers\JobUnitController;
+use App\Http\Controllers\UsageCategoryController;
+use App\Http\Controllers\UserRoleController;
 
 /*
 |--------------------------------------------------------------------------
@@ -28,7 +32,27 @@ Route::group(['prefix' => 'auth'], function() {
     });
 });
 
-/* Users API Routes */ // Add auth access when not authenticated
+/* Role API Routes */
+Route::middleware(['auth:sanctum'])->group(function() {
+    Route::apiResource('roles', RoleController::class);
+});
+
+/* Job Unit API Routes */
+Route::middleware(['auth:sanctum'])->group(function() {
+    Route::apiResource('jobunits', JobUnitController::class);
+});
+
+/* Usage Categories API Routes */
+Route::middleware(['auth:sanctum'])->group(function() {
+    Route::apiResource('usagecategories', UsageCategoryController::class);
+});
+
+/* User Roles API Routes */
+Route::middleware(['auth:sanctum'])->group(function() {
+    Route::apiResource('userroles', UserRoleController::class);
+});
+
+/* Users API Routes */
 Route::middleware(['auth:sanctum'])->group(function() {
     Route::apiResource('users', UserController::class);
     Route::get('usersPreStoreData', [UserController::class, 'preStoreData']);
