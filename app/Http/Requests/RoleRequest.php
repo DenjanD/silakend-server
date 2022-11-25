@@ -24,7 +24,7 @@ class RoleRequest extends FormRequest
     public function rules()
     {
         return [
-            'name' => 'required|string|max:30',
+            'name' => 'required|string|max:30|regex:/^[a-zA-Z ]+$/',
             'level' => 'required|numeric|digits_between:1,11'
         ];
     }

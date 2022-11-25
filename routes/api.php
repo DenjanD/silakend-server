@@ -8,6 +8,7 @@ use App\Http\Controllers\RoleController;
 use App\Http\Controllers\JobUnitController;
 use App\Http\Controllers\UsageCategoryController;
 use App\Http\Controllers\VehicleCategoryController;
+use App\Http\Controllers\VehicleController;
 use App\Http\Controllers\UserRoleController;
 
 /*
@@ -63,4 +64,9 @@ Route::middleware(['auth:sanctum'])->group(function() {
     Route::apiResource('users', UserController::class);
     Route::get('usersPreStoreData', [UserController::class, 'preStoreData']);
     Route::get('usersPreUpdateData/{id}', [UserController::class, 'preUpdateData']);
+});
+
+/* Vehicles API Routes */
+Route::middleware(['auth:sanctum'])->group(function() {
+    Route::apiResource('vehicles', VehicleController::class);
 });

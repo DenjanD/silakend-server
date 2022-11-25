@@ -19,7 +19,7 @@ class CreateVehiclesTable extends Migration
             $table->string('year', 4);
             $table->date('tax_date');
             $table->date('valid_date');
-            $table->string('license_number', 10);
+            $table->string('license_number', 11);
             $table->integer('distance_count');
 
             $table->foreignUuid('vcategory_id');

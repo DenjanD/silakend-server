@@ -42,4 +42,10 @@ class Vehicle extends Model
     ];
 
     protected $primaryKey = 'vehicle_id';
+
+    //null saat di get
+    public function category() {
+        return $this->hasOne(VehicleCategory::class, 'vcategory_id', 'vcategory_id')
+                    ->select(['vcategory_id','name']);
+    }
 }

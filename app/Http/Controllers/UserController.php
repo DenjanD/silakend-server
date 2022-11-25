@@ -70,7 +70,7 @@ class UserController extends Controller
      */
     public function show($id)
     {
-        $userData = User::findOrFail($id);
+        $userData = User::with('jobUnit')->findOrFail($id);
 
         // return response()->json($userData, 200);
         return response()->json([$userData], 200);
