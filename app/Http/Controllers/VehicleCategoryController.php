@@ -3,10 +3,10 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-use App\Http\Requests\UserRoleRequest;
-use App\Models\UserRole;
+use App\Http\Requests\VehicleCategoryRequest;
+use App\Models\VehicleCategory;
 
-class UserRoleController extends Controller
+class VehicleCategoryController extends Controller
 {
     /**
      * Display a listing of the resource.
@@ -15,9 +15,9 @@ class UserRoleController extends Controller
      */
     public function index()
     {
-        $userRoleData = UserRole::select('user_role_id','user_id','role_id')->get();
+        $vehicleCategoryData = VehicleCategory::select('vcategory_id','name')->get();
 
-        return response()->json($userRoleData, 200);
+        return response()->json($vehicleCategoryData, 200);
     }
 
     /**
@@ -26,21 +26,21 @@ class UserRoleController extends Controller
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
-    public function store(UserRoleRequest $request)
+    public function store(VehicleCategoryRequest $request)
     {
         $newData = $request->all();
 
-        $newUserRole = UserRole::create($newData);
+        $newVehicleCategory = VehicleCategory::create($newData);
 
-        if ($newUserRole->user_role_id != '') {
+        if ($newVehicleCategory->vcategory_id != '') {
             return response()->json([
-                'msg' => 'User role has been created',
-                'newUserRoleId' => $newUserRole->user_role_id
+                'msg' => 'Vehicle category has been created',
+                'newVehicleCategoryId' => $newVehicleCategory->vcategory_id
             ], 200);
         }
 
         return response()->json([
-            'msg' => 'Something wrong while creating new user role'
+            'msg' => 'Something wrong while creating new vehicle category'
         ], 500);
     }
 
@@ -52,10 +52,10 @@ class UserRoleController extends Controller
      */
     public function show($id)
     {
-        $userRoleData = UserRole::findOrFail($id);
+        $vehicleCategoryData = VehicleCategory::findOrFail($id);
 
         return response()->json([
-            $userRoleData
+            $vehicleCategoryData
         ], 200);
     }
 
@@ -66,21 +66,21 @@ class UserRoleController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function update(UserRoleRequest $request, $id)
+    public function update(VehicleCategoryRequest $request, $id)
     {
         $newData = $request->all();
 
-        $dataUpdate = UserRole::findOrFail($id);
+        $dataUpdate = VehicleCategory::findOrFail($id);
 
         if ($dataUpdate->update($newData)) {
             return response()->json([
-                'msg' => 'User Role has been updated',
-                'updatedUserRoleId' => $dataUpdate->user_role_id
+                'msg' => 'Vehicle category has been updated',
+                'updatedVehicleCategoryId' => $dataUpdate->vcategory_id
             ], 200);
         }
 
         return response()->json([
-            'msg' => 'Something wrong while updating user role'
+            'msg' => 'Something wrong while updating vehicle category'
         ], 500);
     }
 
@@ -92,16 +92,16 @@ class UserRoleController extends Controller
      */
     public function destroy($id)
     {
-        $deleteUserRole = UserRole::findOrFail($id);
+        $deleteVehicleCategory = VehicleCategory::findOrFail($id);
 
-        if ($deleteUserRole->delete()) {
+        if ($deleteVehicleCategory->delete()) {
             return response()->json([
-                'msg' => 'User role has been deleted'
+                'msg' => 'Vehicle category has been deleted'
             ], 200);
         }
 
         return response()->json([
-            'msg' => 'Something wrong while deleting user role'
+            'msg' => 'Something wrong while deleting vehicle category'
         ], 500);
     }
 }

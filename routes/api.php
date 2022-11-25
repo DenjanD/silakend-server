@@ -7,6 +7,7 @@ use App\Http\Controllers\UserController;
 use App\Http\Controllers\RoleController;
 use App\Http\Controllers\JobUnitController;
 use App\Http\Controllers\UsageCategoryController;
+use App\Http\Controllers\VehicleCategoryController;
 use App\Http\Controllers\UserRoleController;
 
 /*
@@ -45,6 +46,11 @@ Route::middleware(['auth:sanctum'])->group(function() {
 /* Usage Categories API Routes */
 Route::middleware(['auth:sanctum'])->group(function() {
     Route::apiResource('usagecategories', UsageCategoryController::class);
+});
+
+/* Vehicle Categories API Routes */
+Route::middleware(['auth:sanctum'])->group(function() {
+    Route::apiResource('vehiclecategories', VehicleCategoryController::class);
 });
 
 /* User Roles API Routes */
