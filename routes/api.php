@@ -10,6 +10,8 @@ use App\Http\Controllers\UsageCategoryController;
 use App\Http\Controllers\VehicleCategoryController;
 use App\Http\Controllers\VehicleController;
 use App\Http\Controllers\VehicleUsageController;
+use App\Http\Controllers\VehicleMaintenanceController;
+use App\Http\Controllers\VehicleMaintenanceDetailController;
 use App\Http\Controllers\UserRoleController;
 
 /*
@@ -72,8 +74,17 @@ Route::middleware(['auth:sanctum'])->group(function() {
     Route::apiResource('vehicles', VehicleController::class);
 });
 
-/* Vehicles API Routes */
+/* Vehicle Usages API Routes */
 Route::middleware(['auth:sanctum'])->group(function() {
     Route::apiResource('vehicleusages', VehicleUsageController::class);
 });
 
+/* Vehicle Maintenances API Routes */
+Route::middleware(['auth:sanctum'])->group(function() {
+    Route::apiResource('vehiclemaintenances', VehicleMaintenanceController::class);
+});
+
+/* Vehicle Maintenance Details API Routes */
+Route::middleware(['auth:sanctum'])->group(function() {
+    Route::apiResource('vehiclemaintenancedetails', VehicleMaintenanceDetailController::class);
+});
