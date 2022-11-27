@@ -26,14 +26,14 @@ class CreateVehicleUsagesTable extends Migration
             $table->text('destination');
             $table->date('start_date');
             $table->date('end_date');
-            $table->date('depart_date');
-            $table->time('depart_time');
-            $table->date('arrive_date');
-            $table->time('arrive_time');
-            $table->integer('distance_count_out');
-            $table->integer('distance_count_in');
+            $table->date('depart_date')->nullable();
+            $table->time('depart_time')->nullable();
+            $table->date('arrive_date')->nullable();
+            $table->time('arrive_time')->nullable();
+            $table->integer('distance_count_out')->nullable();
+            $table->integer('distance_count_in')->nullable();
             $table->string('status');
-            $table->text('status_description');
+            $table->text('status_description')->nullable();
 
             $table->softDeletes();
             $table->timestamps();
