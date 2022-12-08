@@ -38,39 +38,39 @@ Route::group(['prefix' => 'auth'], function() {
 });
 
 /* Role API Routes */
-Route::middleware(['auth:sanctum'])->group(function() {
+Route::middleware(['auth:sanctum','superadmin'])->group(function() {
     Route::apiResource('roles', RoleController::class);
 });
 
 /* Job Unit API Routes */
-Route::middleware(['auth:sanctum'])->group(function() {
+Route::middleware(['auth:sanctum','superadmin'])->group(function() {
     Route::apiResource('jobunits', JobUnitController::class);
 });
 
 /* Usage Categories API Routes */
-Route::middleware(['auth:sanctum'])->group(function() {
+Route::middleware(['auth:sanctum','superadmin','validator'])->group(function() {
     Route::apiResource('usagecategories', UsageCategoryController::class);
 });
 
 /* Vehicle Categories API Routes */
-Route::middleware(['auth:sanctum'])->group(function() {
+Route::middleware(['auth:sanctum','superadmin','validator'])->group(function() {
     Route::apiResource('vehiclecategories', VehicleCategoryController::class);
 });
 
 /* User Roles API Routes */
-Route::middleware(['auth:sanctum'])->group(function() {
+Route::middleware(['auth:sanctum','superadmin'])->group(function() {
     Route::apiResource('userroles', UserRoleController::class);
 });
 
 /* Users API Routes */
-Route::middleware(['auth:sanctum'])->group(function() {
+Route::middleware(['auth:sanctum','superadmin'])->group(function() {
     Route::apiResource('users', UserController::class);
     Route::get('usersPreStoreData', [UserController::class, 'preStoreData']);
     Route::get('usersPreUpdateData/{id}', [UserController::class, 'preUpdateData']);
 });
 
 /* Vehicles API Routes */
-Route::middleware(['auth:sanctum'])->group(function() {
+Route::middleware(['auth:sanctum','superadmin','validator'])->group(function() {
     Route::apiResource('vehicles', VehicleController::class);
 });
 
@@ -80,11 +80,11 @@ Route::middleware(['auth:sanctum'])->group(function() {
 });
 
 /* Vehicle Maintenances API Routes */
-Route::middleware(['auth:sanctum'])->group(function() {
+Route::middleware(['auth:sanctum','superadmin','validator'])->group(function() {
     Route::apiResource('vehiclemaintenances', VehicleMaintenanceController::class);
 });
 
 /* Vehicle Maintenance Details API Routes */
-Route::middleware(['auth:sanctum'])->group(function() {
+Route::middleware(['auth:sanctum','superadmin','validator'])->group(function() {
     Route::apiResource('vehiclemaintenancedetails', VehicleMaintenanceDetailController::class);
 });
