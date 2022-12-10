@@ -63,10 +63,10 @@ Route::middleware(['auth:sanctum','superadmin'])->group(function() {
 });
 
 /* Users API Routes */
-Route::middleware(['auth:sanctum','superadmin'])->group(function() {
+Route::middleware(['auth:sanctum'])->group(function() {
     Route::apiResource('users', UserController::class);
-    Route::get('usersPreStoreData', [UserController::class, 'preStoreData']);
-    Route::get('usersPreUpdateData/{id}', [UserController::class, 'preUpdateData']);
+    Route::get('usersPreStoreData', [UserController::class, 'preStoreData'])->middleware('superadmin');
+    Route::get('usersPreUpdateData/{id}', [UserController::class, 'preUpdateData'])->middleware('superadmin');
 });
 
 /* Vehicles API Routes */

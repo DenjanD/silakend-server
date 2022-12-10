@@ -20,6 +20,7 @@ class UserController extends Controller
      */
     public function index()
     {
+        $this->authorize('get-create-delete-users');
         $userData = User::with('jobUnit')
                         ->select('user_id','nip','name','address','phone','email','unit_id')
                         ->get();
@@ -37,6 +38,7 @@ class UserController extends Controller
      */
     public function store(UserRequest $request)
     {
+        $this->authorize('get-create-delete-users');
         $newData = $request->all();
 
          unset($newData['role_id']);
@@ -70,6 +72,7 @@ class UserController extends Controller
      */
     public function show($id)
     {
+        $this->authorize('show-update-users',$id);
         $userData = User::with('jobUnit')->findOrFail($id);
 
         // return response()->json($userData, 200);
@@ -85,6 +88,7 @@ class UserController extends Controller
      */
     public function update(UserRequest $request, $id)
     {
+        $this->authorize('show-update-users',$id);
         // Update User's Roles Tables Only
         $deletedUserRoles = UserRole::where('user_id', $id)->delete();
         $newUserRoleIds = [];
@@ -124,6 +128,7 @@ class UserController extends Controller
      */
     public function destroy($id)
     {
+        $this->authorize('get-create-delete-users',$id);
         $userRoles = UserRole::where('user_id', $id);
         if ($userRoles->delete()) {
             $deleteUser = User::findOrFail($id);
