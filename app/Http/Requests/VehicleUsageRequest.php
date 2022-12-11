@@ -34,8 +34,8 @@ class VehicleUsageRequest extends FormRequest
             7. REJECTED: Order cancelen by VERIFIER, or VALIDATOR.
         */
         return [
-            'vehicle_id' => 'required|exists:App\Models\Vehicle,vehicle_id',
-            'driver_id' => 'required|exists:App\Models\User,user_id',
+            'vehicle_id' => 'nullable|exists:App\Models\Vehicle,vehicle_id',
+            'driver_id' => 'nullable|exists:App\Models\User,user_id',
             'user_id' => 'required|exists:App\Models\User,user_id',
             'ucategory_id' => 'required|exists:App\Models\UsageCategory,ucategory_id',
             'usage_description' => 'required|string',

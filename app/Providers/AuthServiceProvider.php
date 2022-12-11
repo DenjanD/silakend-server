@@ -42,5 +42,12 @@ class AuthServiceProvider extends ServiceProvider
                 }
             }
         });
+
+        // Gate CRUD Vehicle Usage --superadmin/allAuthenticated
+        Gate::define('get-show-store-update-delete-vehicle_usages', function (User $user) {
+            foreach ($user->role as $userRole) {
+                return $userRole->level == 1;
+            }
+        });
     }
 }

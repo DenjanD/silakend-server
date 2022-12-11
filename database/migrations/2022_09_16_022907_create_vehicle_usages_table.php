@@ -16,8 +16,8 @@ class CreateVehicleUsagesTable extends Migration
         Schema::create('vehicle_usages', function (Blueprint $table) {
             $table->uuid('usage_id')->primary();
 
-            $table->foreignUuid('vehicle_id');
-            $table->foreignUuid('driver_id');
+            $table->foreignUuid('vehicle_id')->nullable();
+            $table->foreignUuid('driver_id')->nullable();
             $table->foreignUuid('user_id');
             $table->foreignUuid('ucategory_id');
 
