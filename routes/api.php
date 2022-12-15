@@ -70,7 +70,7 @@ Route::middleware(['auth:sanctum'])->group(function() {
 });
 
 /* Vehicles API Routes */
-Route::middleware(['auth:sanctum','superadmin','validator'])->group(function() {
+Route::middleware(['auth:sanctum','superadmin','validator','driver'])->group(function() {
     Route::apiResource('vehicles', VehicleController::class);
 });
 

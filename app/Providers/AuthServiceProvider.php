@@ -48,6 +48,13 @@ class AuthServiceProvider extends ServiceProvider
             }
         });
 
+        // Is Driver Gate
+        Gate::define('is-driver', function (User $user) {
+            foreach ($user->role as $userRole) {
+                return $userRole->level == 4;
+            }
+        });
+
         // Is Superadmin Or Current User Gate
         Gate::define('is-superadmin-or-currentuser', function (User $user, $id) {
             foreach ($user->role as $userRole) {

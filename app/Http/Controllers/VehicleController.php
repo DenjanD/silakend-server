@@ -30,20 +30,22 @@ class VehicleController extends Controller
      */
     public function store(VehicleRequest $request)
     {
-        $newData = $request->all();
+        if (Gate::allows('is-superadmin') || Gate::allows('is-validator')) {
+            $newData = $request->all();
 
-        $newVehicle = Vehicle::create($newData);
+            $newVehicle = Vehicle::create($newData);
 
-        if ($newVehicle->vehicle_id != '') {
+            if ($newVehicle->vehicle_id != '') {
+                return response()->json([
+                    'msg' => 'Vehicle has been created',
+                    'newVehicleId' => $newVehicle->vehicle_id
+                ], 200);
+            }
+
             return response()->json([
-                'msg' => 'Vehicle has been created',
-                'newVehicleId' => $newVehicle->vehicle_id
-            ], 200);
-        }
-
-        return response()->json([
-            'msg' => 'Something wrong while creating new vehicle'
-        ], 500);
+                'msg' => 'Something wrong while creating new vehicle'
+            ], 500);
+        } 
     }
 
     /**
@@ -68,20 +70,22 @@ class VehicleController extends Controller
      */
     public function update(VehicleRequest $request, $id)
     {
-        $newData = $request->all();
+        if (Gate::allows('is-superadmin') || Gate::allows('is-validator')) {
+            $newData = $request->all();
 
-        $dataUpdate = Vehicle::findOrFail($id);
+            $dataUpdate = Vehicle::findOrFail($id);
 
-        if ($dataUpdate->update($newData)) {
+            if ($dataUpdate->update($newData)) {
+                return response()->json([
+                    'msg' => 'Vehicle has been updated',
+                    'updatedVehicleId' => $dataUpdate->vehicle_id
+                ], 200);
+            }
+
             return response()->json([
-                'msg' => 'Vehicle has been updated',
-                'updatedVehicleId' => $dataUpdate->vehicle_id
-            ], 200);
+                'msg' => 'Something wrong while updating the vehicle'
+            ], 500);
         }
-
-        return response()->json([
-            'msg' => 'Something wrong while updating the vehicle'
-        ], 500);
     }
 
     /**
@@ -92,16 +96,18 @@ class VehicleController extends Controller
      */
     public function destroy($id)
     {
-        $deleteVehicle = Vehicle::findOrFail($id);
+        if (Gate::allows('is-superadmin') || Gate::allows('is-validator')) {
+            $deleteVehicle = Vehicle::findOrFail($id);
 
-        if ($deleteVehicle->delete()) {
+            if ($deleteVehicle->delete()) {
+                return response()->json([
+                    'msg' => 'Vehicle has been deleted'
+                ], 200);
+            }
+
             return response()->json([
-                'msg' => 'Vehicle has been deleted'
-            ], 200);
+                'msg' => 'There is a problem while deleting the vehicle'
+            ], 500);
         }
-
-        return response()->json([
-            'msg' => 'There is a problem while deleting the vehicle'
-        ], 500);
     }
 }
