@@ -52,4 +52,20 @@ class VehicleUsage extends Model
     ];
 
     protected $primaryKey = 'usage_id';
+
+    public function vehicle() {
+        return $this->belongsTo(Vehicle::class, 'vehicle_id', 'vehicle_id')->select(['vehicle_id','name']);;
+    }
+
+    public function driver() {
+        return $this->belongsTo(User::class, 'driver_id', 'user_id')->select(['user_id','name']);;
+    }
+
+    public function user() {
+        return $this->belongsTo(User::class, 'user_id', 'user_id')->select(['user_id','name']);;
+    }
+
+    public function category() {
+        return $this->belongsTo(UsageCategory::class, 'ucategory_id', 'ucategory_id')->select(['ucategory_id','name']);;
+    }
 }

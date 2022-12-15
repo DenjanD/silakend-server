@@ -10,6 +10,8 @@ use App\Models\JobUnit;
 use App\Models\Role;
 use App\Models\UserRole;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Gate;
+use Illuminate\Support\Facades\Auth;
 
 class UserController extends Controller
 {
@@ -20,10 +22,20 @@ class UserController extends Controller
      */
     public function index()
     {
-        $this->authorize('get-create-delete-users');
-        $userData = User::with('jobUnit')
+        if (Gate::allows('is-superadmin')) {
+            $userData = User::with('jobUnit')
                         ->select('user_id','nip','name','address','phone','email','unit_id')
                         ->get();
+        } else if (Gate::allows('is-verifier')) {
+            $userData = User::with('jobUnit')
+                        ->select('user_id','nip','name','address','phone','email','unit_id')
+                        ->where('unit_id',Auth::user()->jobUnit->unit_id)
+                        ->get();
+        } else {
+            return response()->json([
+                'msg' => 'Forbidden'
+            ], 403);
+        }
 
         return response()->json(
             $userData
@@ -38,7 +50,7 @@ class UserController extends Controller
      */
     public function store(UserRequest $request)
     {
-        $this->authorize('get-create-delete-users');
+        $this->authorize('is-superadmin');
         $newData = $request->all();
 
          unset($newData['role_id']);
@@ -72,10 +84,14 @@ class UserController extends Controller
      */
     public function show($id)
     {
-        $this->authorize('show-update-users',$id);
-        $userData = User::with('jobUnit')->findOrFail($id);
+        if (Gate::allows('is-superadmin')) {
+            $userData = User::with(['jobUnit','role'])->findOrFail($id);
+        } else if (Gate::allows('is-verifier')) {
+            $userData = User::with(['jobUnit','role'])->where('user_id', $id)->where('unit_id', Auth::user()->jobUnit->unit_id)->first();
+        } else {
+            $userData = User::with(['jobUnit','role'])->where('user_id', $id)->where('user_id', Auth::user()->user_id)->first();
+        }
 
-        // return response()->json($userData, 200);
         return response()->json([$userData], 200);
     }
 
@@ -88,7 +104,7 @@ class UserController extends Controller
      */
     public function update(UserRequest $request, $id)
     {
-        $this->authorize('show-update-users',$id);
+        $this->authorize('is-superadmin-or-currentuser',$id);
         // Update User's Roles Tables Only
         $deletedUserRoles = UserRole::where('user_id', $id)->delete();
         $newUserRoleIds = [];
@@ -128,7 +144,7 @@ class UserController extends Controller
      */
     public function destroy($id)
     {
-        $this->authorize('get-create-delete-users',$id);
+        $this->authorize('is-superadmin');
         $userRoles = UserRole::where('user_id', $id);
         if ($userRoles->delete()) {
             $deleteUser = User::findOrFail($id);

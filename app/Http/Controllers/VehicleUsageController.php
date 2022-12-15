@@ -17,13 +17,21 @@ class VehicleUsageController extends Controller
      */
     public function index()
     {
-        if (Gate::allows('get-show-store-update-delete-vehicle_usages')) {
-            $vehicleUsageData = VehicleUsage::select('usage_id','vehicle_id','driver_id','user_id','ucategory_id'
+        if (Gate::allows('is-superadmin')) {
+            $vehicleUsageData = VehicleUsage::with(['user','vehicle','driver','category'])->select('usage_id','vehicle_id','driver_id','user_id','ucategory_id'
             ,'usage_description','personel_count','destination','start_date','end_date'
             ,'depart_date','depart_time','arrive_date','arrive_time','distance_count_out'
             ,'distance_count_in','status','status_description')->get();
+        } else if (Gate::allows('is-verifier')) {
+            $vehicleUsageData = VehicleUsage::with(['user','vehicle','driver','category'])->select('usage_id','vehicle_id','driver_id','vehicle_usages.user_id','ucategory_id'
+            ,'usage_description','personel_count','destination','start_date','end_date'
+            ,'depart_date','depart_time','arrive_date','arrive_time','distance_count_out'
+            ,'distance_count_in','vehicle_usages.status','status_description')
+            ->join('users','vehicle_usages.user_id','=','users.user_id')
+            ->where('users.unit_id', Auth::user()->jobUnit->unit_id)
+            ->get();
         } else {
-            $vehicleUsageData = VehicleUsage::select('usage_id','vehicle_id','driver_id','user_id','ucategory_id'
+            $vehicleUsageData = VehicleUsage::with(['user','vehicle','driver','category'])->select('usage_id','vehicle_id','driver_id','user_id','ucategory_id'
             ,'usage_description','personel_count','destination','start_date','end_date'
             ,'depart_date','depart_time','arrive_date','arrive_time','distance_count_out'
             ,'distance_count_in','status','status_description')
@@ -42,7 +50,7 @@ class VehicleUsageController extends Controller
      */
     public function store(VehicleUsageRequest $request)
     {
-        if (Gate::allows('get-show-store-update-delete-vehicle_usages')) {
+        if (Gate::allows('is-superadmin')) {
             $newData = $request->all();
         } else {
             $newData = $request->all();
@@ -71,13 +79,26 @@ class VehicleUsageController extends Controller
      */
     public function show($id)
     {
-        if (Gate::allows('get-show-store-update-delete-vehicle_usages')) {
+        if (Gate::allows('is-superadmin')) {
             $vehicleUsageData = VehicleUsage::findOrFail($id);
+        } else if (Gate::allows('is-verifier')) {
+            $vehicleUsageData = VehicleUsage::with(['user','vehicle','driver','category'])->select('usage_id','vehicle_id','driver_id','vehicle_usages.user_id','ucategory_id'
+            ,'usage_description','personel_count','destination','start_date','end_date'
+            ,'depart_date','depart_time','arrive_date','arrive_time','distance_count_out'
+            ,'distance_count_in','vehicle_usages.status','status_description')
+            ->join('users','vehicle_usages.user_id','=','users.user_id')
+            ->where('unit_id', Auth::user()->jobUnit->unit_id)
+            ->where('usage_id', $id)
+            ->first();
         } else {
-            $vehicleUsageData = VehicleUsage::where('user_id', Auth::user()->user_id)
-                                            ->where('usage_id', $id)
-                                            ->first();
-        } 
+            $vehicleUsageData = VehicleUsage::with(['user','vehicle','driver','category'])->select('usage_id','vehicle_id','driver_id','vehicle_usages.user_id','ucategory_id'
+            ,'usage_description','personel_count','destination','start_date','end_date'
+            ,'depart_date','depart_time','arrive_date','arrive_time','distance_count_out'
+            ,'distance_count_in','vehicle_usages.status','status_description')
+            ->where('usage_id', $id)
+            ->where('user_id', Auth::user()->user_id)
+            ->first();
+        }
 
         return response()->json([$vehicleUsageData], 200);
     }
@@ -91,12 +112,20 @@ class VehicleUsageController extends Controller
      */
     public function update(VehicleUsageRequest $request, $id)
     {
-        if (Gate::allows('get-show-store-update-delete-vehicle_usages')) {
+        if (Gate::allows('is-superadmin')) {
             $newData = $request->all();
 
             $dataUpdate = VehicleUsage::findOrFail($id);
+        } else if (Gate::allows('is-verifier')) {
+            $newData['status'] = $request->input('status');
+
+            $dataUpdate = VehicleUsage::where('user_id', Auth::user()->user_id)
+                                        ->join('users','users.user_id','=','vehicle_usages.user_id')
+                                        ->where('usage_id', $id)
+                                        ->where('users.unit_id', Auth::user()->jobUnit->unit_id)
+                                        ->first();
         } else {
-            $newData = $request->all();
+            $newData['status'] = $request->input('status');
             $newData['user_id'] = Auth::user()->user_id;
 
             $dataUpdate = VehicleUsage::where('user_id', Auth::user()->user_id)
@@ -124,7 +153,7 @@ class VehicleUsageController extends Controller
      */
     public function destroy($id)
     {
-        if (Gate::allows('get-show-store-update-delete-vehicle_usages')) {
+        if (Gate::allows('is-superadmin')) {
             $deleteVehicleUsage = VehicleUsage::findOrFail($id);
         } else {
             $deleteVehicleUsage = VehicleUsage::where('user_id', Auth::user()->user_id)

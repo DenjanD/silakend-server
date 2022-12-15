@@ -27,26 +27,26 @@ class AuthServiceProvider extends ServiceProvider
     {
         $this->registerPolicies();
 
-        // Gate CRUD Users --superadmin
-        Gate::define('get-create-delete-users', function (User $user) {
+        // Is Superadmin Gate
+        Gate::define('is-superadmin', function (User $user) {
             foreach ($user->role as $userRole) {
                 return $userRole->level == 1;
             }
         });
 
-        // Gate Show,Update User By Id --superadmin/allAuthenticated
-        Gate::define('show-update-users', function (User $user, $id) {
+        // Is Verifier Gate
+        Gate::define('is-verifier', function (User $user) {
+            foreach ($user->role as $userRole) {
+                return $userRole->level == 3;
+            }
+        });
+
+        // Is Superadmin Or Current User Gate
+        Gate::define('is-superadmin-or-currentuser', function (User $user, $id) {
             foreach ($user->role as $userRole) {
                 if ($userRole->level == 1 || $user->user_id == $id) {
                     return true;
                 }
-            }
-        });
-
-        // Gate CRUD Vehicle Usage --superadmin/allAuthenticated
-        Gate::define('get-show-store-update-delete-vehicle_usages', function (User $user) {
-            foreach ($user->role as $userRole) {
-                return $userRole->level == 1;
             }
         });
     }
