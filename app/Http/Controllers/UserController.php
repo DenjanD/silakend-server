@@ -22,7 +22,7 @@ class UserController extends Controller
      */
     public function index()
     {
-        if (Gate::allows('is-superadmin')) {
+        if (Gate::allows('is-superadmin') || Gate::allows('is-validator')) {
             $userData = User::with('jobUnit')
                         ->select('user_id','nip','name','address','phone','email','unit_id')
                         ->get();
@@ -84,7 +84,7 @@ class UserController extends Controller
      */
     public function show($id)
     {
-        if (Gate::allows('is-superadmin')) {
+        if (Gate::allows('is-superadmin') || Gate::allows('is-validator')) {
             $userData = User::with(['jobUnit','role'])->findOrFail($id);
         } else if (Gate::allows('is-verifier')) {
             $userData = User::with(['jobUnit','role'])->where('user_id', $id)->where('unit_id', Auth::user()->jobUnit->unit_id)->first();

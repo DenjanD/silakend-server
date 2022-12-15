@@ -17,7 +17,7 @@ class VehicleUsageController extends Controller
      */
     public function index()
     {
-        if (Gate::allows('is-superadmin')) {
+        if (Gate::allows('is-superadmin') || Gate::allows('is-validator')) {
             $vehicleUsageData = VehicleUsage::with(['user','vehicle','driver','category'])->select('usage_id','vehicle_id','driver_id','user_id','ucategory_id'
             ,'usage_description','personel_count','destination','start_date','end_date'
             ,'depart_date','depart_time','arrive_date','arrive_time','distance_count_out'
@@ -50,7 +50,7 @@ class VehicleUsageController extends Controller
      */
     public function store(VehicleUsageRequest $request)
     {
-        if (Gate::allows('is-superadmin')) {
+        if (Gate::allows('is-superadmin') || Gate::allows('is-validator')) {
             $newData = $request->all();
         } else {
             $newData = $request->all();
@@ -79,7 +79,7 @@ class VehicleUsageController extends Controller
      */
     public function show($id)
     {
-        if (Gate::allows('is-superadmin')) {
+        if (Gate::allows('is-superadmin') || Gate::allows('is-validator')) {
             $vehicleUsageData = VehicleUsage::findOrFail($id);
         } else if (Gate::allows('is-verifier')) {
             $vehicleUsageData = VehicleUsage::with(['user','vehicle','driver','category'])->select('usage_id','vehicle_id','driver_id','vehicle_usages.user_id','ucategory_id'
@@ -112,7 +112,7 @@ class VehicleUsageController extends Controller
      */
     public function update(VehicleUsageRequest $request, $id)
     {
-        if (Gate::allows('is-superadmin')) {
+        if (Gate::allows('is-superadmin') || Gate::allows('is-validator')) {
             $newData = $request->all();
 
             $dataUpdate = VehicleUsage::findOrFail($id);
@@ -153,7 +153,7 @@ class VehicleUsageController extends Controller
      */
     public function destroy($id)
     {
-        if (Gate::allows('is-superadmin')) {
+        if (Gate::allows('is-superadmin') || Gate::allows('is-validator')) {
             $deleteVehicleUsage = VehicleUsage::findOrFail($id);
         } else {
             $deleteVehicleUsage = VehicleUsage::where('user_id', Auth::user()->user_id)

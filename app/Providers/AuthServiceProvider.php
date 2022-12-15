@@ -34,6 +34,13 @@ class AuthServiceProvider extends ServiceProvider
             }
         });
 
+        // Is Validator Gate
+        Gate::define('is-validator', function (User $user) {
+            foreach ($user->role as $userRole) {
+                return $userRole->level == 2;
+            }
+        });
+
         // Is Verifier Gate
         Gate::define('is-verifier', function (User $user) {
             foreach ($user->role as $userRole) {
