@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Http\Requests\VehicleRequest;
 use App\Models\Vehicle;
+use Illuminate\Support\Facades\Gate;
 
 class VehicleController extends Controller
 {
@@ -45,7 +46,11 @@ class VehicleController extends Controller
             return response()->json([
                 'msg' => 'Something wrong while creating new vehicle'
             ], 500);
-        } 
+        } else {
+            return response()->json([
+                'msg' => 'Unauthorized'
+            ], 401);
+        }
     }
 
     /**
@@ -85,6 +90,10 @@ class VehicleController extends Controller
             return response()->json([
                 'msg' => 'Something wrong while updating the vehicle'
             ], 500);
+        } else {
+            return response()->json([
+                'msg' => 'Unauthorized'
+            ], 401);
         }
     }
 
@@ -108,6 +117,10 @@ class VehicleController extends Controller
             return response()->json([
                 'msg' => 'There is a problem while deleting the vehicle'
             ], 500);
+        } else {
+            return response()->json([
+                'msg' => 'Unauthorized'
+            ], 401);
         }
     }
 }

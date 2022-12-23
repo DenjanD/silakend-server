@@ -159,12 +159,12 @@ class UserController extends Controller
             } else {
                 return response()->json([
                     'msg' => 'There is a problem while deleting the user'
-                ], 200);
+                ], 500);
             }
         } else {
             return response()->json([
                 'msg' => 'There is something wrong while deleting the user\'s roles'
-            ], 200);
+            ], 500);
         }
     }
 

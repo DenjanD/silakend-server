@@ -48,12 +48,12 @@ Route::middleware(['auth:sanctum','superadmin'])->group(function() {
 });
 
 /* Usage Categories API Routes */
-Route::middleware(['auth:sanctum','superadmin','validator'])->group(function() {
+Route::middleware(['auth:sanctum','role::1,2'])->group(function() {
     Route::apiResource('usagecategories', UsageCategoryController::class);
 });
 
 /* Vehicle Categories API Routes */
-Route::middleware(['auth:sanctum','superadmin','validator'])->group(function() {
+Route::middleware(['auth:sanctum','role::1,2'])->group(function() {
     Route::apiResource('vehiclecategories', VehicleCategoryController::class);
 });
 
@@ -70,7 +70,7 @@ Route::middleware(['auth:sanctum'])->group(function() {
 });
 
 /* Vehicles API Routes */
-Route::middleware(['auth:sanctum','superadmin','validator','driver'])->group(function() {
+Route::middleware(['auth:sanctum','role::1,2,4'])->group(function() {
     Route::apiResource('vehicles', VehicleController::class);
 });
 
@@ -80,11 +80,11 @@ Route::middleware(['auth:sanctum'])->group(function() {
 });
 
 /* Vehicle Maintenances API Routes */
-Route::middleware(['auth:sanctum','superadmin','validator'])->group(function() {
+Route::middleware(['auth:sanctum','role::1,2'])->group(function() {
     Route::apiResource('vehiclemaintenances', VehicleMaintenanceController::class);
 });
 
 /* Vehicle Maintenance Details API Routes */
-Route::middleware(['auth:sanctum','superadmin','validator'])->group(function() {
+Route::middleware(['auth:sanctum','role::1,2'])->group(function() {
     Route::apiResource('vehiclemaintenancedetails', VehicleMaintenanceDetailController::class);
 });

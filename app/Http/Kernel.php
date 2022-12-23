@@ -69,5 +69,6 @@ class Kernel extends HttpKernel
         'validator' => \App\Http\Middleware\ValidatorMiddleware::class,
         'verifier' => \App\Http\Middleware\VerifierMiddleware::class,
         'driver' => \App\Http\Middleware\DriverMiddleware::class,
+        'role' => \App\Http\Middleware\RoleMiddleware::class,
     ];
 }
