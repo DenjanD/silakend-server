@@ -88,7 +88,12 @@ class VehicleUsageController extends Controller
     public function show($id)
     {
         if (Gate::allows('is-superadmin') || Gate::allows('is-validator')) {
-            $vehicleUsageData = VehicleUsage::findOrFail($id);
+            $vehicleUsageData = VehicleUsage::with(['user','vehicle','driver','category'])->select('usage_id','vehicle_id','driver_id','vehicle_usages.user_id','ucategory_id'
+            ,'usage_description','personel_count','destination','start_date','end_date'
+            ,'depart_date','depart_time','arrive_date','arrive_time','distance_count_out'
+            ,'distance_count_in','vehicle_usages.status','status_description')
+            ->where('usage_id', $id)
+            ->first();
         } else if (Gate::allows('is-verifier')) {
             $vehicleUsageData = VehicleUsage::with(['user','vehicle','driver','category'])->select('usage_id','vehicle_id','driver_id','vehicle_usages.user_id','ucategory_id'
             ,'usage_description','personel_count','destination','start_date','end_date'
