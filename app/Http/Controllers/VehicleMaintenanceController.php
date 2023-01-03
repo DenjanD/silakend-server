@@ -1,0 +1,106 @@
+<?php
+
+namespace App\Http\Controllers;
+
+use Illuminate\Http\Request;
+use App\Models\VehicleMaintenance;
+use App\Http\Requests\VehicleMaintenanceRequest;
+
+class VehicleMaintenanceController extends Controller
+{
+    /**
+     * Display a listing of the resource.
+     *
+     * @return \Illuminate\Http\Response
+     */
+    public function index()
+    {
+        $vehicleMaintenanceData = VehicleMaintenance::select('maintenance_id','vehicle_id','date','category','description','total_cost')
+                                                    ->get();
+        
+        return response()->json($vehicleMaintenanceData, 200);
+    }
+
+    /**
+     * Store a newly created resource in storage.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @return \Illuminate\Http\Response
+     */
+    public function store(VehicleMaintenanceRequest $request)
+    {
+        $newData = $request->all();
+
+        $newVehicleMaintenance = VehicleMaintenance::create($newData);
+
+        if ($newVehicleMaintenance->maintenance_id != '') {
+            return response()->json([
+                'msg' => 'Vehicle maintenance has been created',
+                'newVehicleMaintenanceId' => $newVehicleMaintenance->maintenance_id
+            ], 200);
+        }
+
+        return response()->json([
+            'msg' => 'Something wrong while creating new vehicle maintenance'
+        ], 500);
+    }
+
+    /**
+     * Display the specified resource.
+     *
+     * @param  int  $id
+     * @return \Illuminate\Http\Response
+     */
+    public function show($id)
+    {
+        $vehicleMaintenanceData = VehicleMaintenance::findOrFail($id);
+        
+        return response()->json([$vehicleMaintenanceData], 200);
+    }
+
+    /**
+     * Update the specified resource in storage.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @param  int  $id
+     * @return \Illuminate\Http\Response
+     */
+    public function update(VehicleMaintenanceRequest $request, $id)
+    {
+        $newData = $request->all();
+
+        $dataUpdate = VehicleMaintenance::findOrFail($id);
+
+        if ($dataUpdate->update($newData)) {
+            return response()->json([
+                'msg' => 'Vehicle maintenance has been updated',
+                'updatedVehicleMaintenanceId' => $dataUpdate->maintenance_id
+            ], 200);
+        }
+
+        return response()->json([
+            'msg' => 'Something wrong while updating the vehicle maintenance',
+        ], 500);
+    }
+
+    /**
+     * Remove the specified resource from storage.
+     *
+     * @param  int  $id
+     * @return \Illuminate\Http\Response
+     */
+    public function destroy($id)
+    {
+        $deleteVehicleMaintenance = VehicleMaintenance::findOrFail($id);
+
+        if ($deleteVehicleMaintenance->delete()) {
+            return response()->json([
+                'msg' => 'Vehicle maintenance has been deleted'
+            ], 200);
+        }
+
+        return response()->json([
+            'msg' => 'There is a problem while deleting the vehicle maintenance'
+        ], 500);
+    }
+}
