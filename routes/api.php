@@ -87,5 +87,5 @@ Route::middleware(['auth:sanctum','role::1,2'])->group(function() {
 /* Vehicle Maintenance Details API Routes */
 Route::middleware(['auth:sanctum','role::1,2'])->group(function() {
     Route::apiResource('vehiclemaintenancedetails', VehicleMaintenanceDetailController::class);
-    Route::get('maintenancedetails/maintenance/{id}', [VehicleMaintenanceDetailController::class, 'getByMaintenanceId']);
+    Route::get('maintenancedetails/{id}', [VehicleMaintenanceDetailController::class, 'getByMaintenanceId']);
 });

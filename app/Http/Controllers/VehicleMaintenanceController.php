@@ -15,7 +15,8 @@ class VehicleMaintenanceController extends Controller
      */
     public function index()
     {
-        $vehicleMaintenanceData = VehicleMaintenance::select('maintenance_id','vehicle_id','date','category','description','total_cost')
+        $vehicleMaintenanceData = VehicleMaintenance::with(['vehicle'])
+                                                    ->select('maintenance_id','vehicle_id','date','category','description','total_cost')
                                                     ->get();
         
         return response()->json($vehicleMaintenanceData, 200);
@@ -53,7 +54,10 @@ class VehicleMaintenanceController extends Controller
      */
     public function show($id)
     {
-        $vehicleMaintenanceData = VehicleMaintenance::findOrFail($id);
+        $vehicleMaintenanceData = VehicleMaintenance::with(['vehicle'])
+                                                    ->select('maintenance_id','vehicle_id','date','category','description','total_cost')
+                                                    ->where('maintenance_id',$id)
+                                                    ->get();
         
         return response()->json([$vehicleMaintenanceData], 200);
     }

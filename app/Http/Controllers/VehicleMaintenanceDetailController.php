@@ -62,7 +62,7 @@ class VehicleMaintenanceDetailController extends Controller
     {
         $vehicleMaintenanceDetailData = VehicleMaintenanceDetail::where('maintenance_id',$id)->get();
         
-        return response()->json([$vehicleMaintenanceDetailData], 200);
+        return response()->json($vehicleMaintenanceDetailData, 200);
     }
 
     /**

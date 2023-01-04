@@ -34,12 +34,19 @@ class AuthController extends Controller
                 return response()->json($response, 401);
             }
 
-            $user = User::where('nip', $request->nip)->first();
+            $user = User::join('user_roles','users.user_id','=','user_roles.user_id')
+                        ->join('roles','user_roles.role_id','=','roles.role_id')
+                        ->where('nip', $request->nip)
+                        ->where('user_roles.deleted_at', null)
+                        ->orderBy('roles.level')
+                        ->first();
+
             if (! \Hash::check($request->password, $user->password, [])) {
                 throw new \Exception('Error in Login');
             }
 
             $tokenResult = $user->createToken('token-auth')->plainTextToken;
+
             $response = [
                 'status' => 'success',
                 'msg' => 'Login successfully',
@@ -48,7 +55,8 @@ class AuthController extends Controller
                     'status_code' => 200,
                     'access_token' => $tokenResult,
                     'token_type' => 'Bearer',
-                    'username' => $user->name
+                    'username' => $user->name,
+                    'user_level' => $user->level
                 ]
             ];
             return response()->json($response, 200);

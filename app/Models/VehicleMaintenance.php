@@ -40,4 +40,9 @@ class VehicleMaintenance extends Model
     ];
 
     protected $primaryKey = 'maintenance_id';
+
+    public function vehicle() {
+        return $this->hasOne(Vehicle::class, 'vehicle_id', 'vehicle_id')
+                    ->select(['vehicle_id','name']);
+    }
 }
