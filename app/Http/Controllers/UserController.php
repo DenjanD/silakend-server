@@ -9,6 +9,7 @@ use App\Models\User;
 use App\Models\JobUnit;
 use App\Models\Role;
 use App\Models\UserRole;
+use App\Events\UserUpdate;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Facades\Auth;
@@ -65,9 +66,17 @@ class UserController extends Controller
 
         if ($newUser->user_id != '') {
             $newUserRole['user_id'] = $newUser->user_id;
-            $newUserRole['role_id'] = $request['role_id'];
+            if ($request['role_id'] != null) {        
+                $newUserRole['role_id'] = $request['role_id'];
+            } else {
+                $userRoleLevel = Role::where('level',5)->first();
+                $newUserRole['role_id'] = $userRoleLevel->level;
+            }
 
             UserRole::create($newUserRole);
+
+            //Broadcast to Front End Listener
+            broadcast(new UserUpdate($newUser));
 
             return response()->json([
                 'msg' => 'User has been created',
@@ -153,6 +162,9 @@ class UserController extends Controller
         if ($userRoles->delete()) {
             $deleteUser = User::findOrFail($id);
             if ($deleteUser->delete()) {
+                //Broadcast to Front End Listener
+                broadcast(new UserUpdate($deleteUser));
+
                 return response()->json([
                     'msg' => 'User has been deleted'
                 ], 200);
@@ -206,6 +218,9 @@ class UserController extends Controller
 
         // Update User's data
         if ($dataUpdate->update($newData)) {
+            //Broadcast to Front End Listener
+            broadcast(new UserUpdate($dataUpdate));
+
             return response()->json([
                 'msg' => 'User has been updated',
                 'updatedUserId' => $dataUpdate->user_id

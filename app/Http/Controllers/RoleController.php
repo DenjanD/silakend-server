@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use App\Http\Requests\RoleRequest;
 
 use App\Models\Role;
+use App\Events\RoleUpdate;
 
 class RoleController extends Controller
 {
@@ -35,6 +36,9 @@ class RoleController extends Controller
         $newRole = Role::create($newData);
 
         if ($newRole->role_id != '') {
+            //Broadcast to Front End Listener
+            broadcast(new RoleUpdate($newRole));
+
             return response()->json([
                 'msg' => 'Role has been created',
                 'newRoleId' => $newRole->role_id
@@ -73,6 +77,9 @@ class RoleController extends Controller
         $dataUpdate = Role::findOrFail($id);
 
         if ($dataUpdate->update($newData)) {
+            //Broadcast to Front End Listener
+            broadcast(new RoleUpdate($dataUpdate));
+
             return response()->json([
                 'msg' => 'Role has been updated',
                 'updatedRoleId' => $dataUpdate->role_id
@@ -95,6 +102,9 @@ class RoleController extends Controller
         $deleteRole = Role::findOrFail($id);
 
         if ($deleteRole->delete()) {
+            //Broadcast to Front End Listener
+            broadcast(new RoleUpdate($deleteRole));
+
             return response()->json([
                 'msg' => 'Role has been deleted',
             ], 200);
