@@ -39,6 +39,7 @@ class AuthController extends Controller
                         ->where('nip', $request->nip)
                         ->where('user_roles.deleted_at', null)
                         ->orderBy('roles.level')
+                        ->select('password','users.user_id','users.name','roles.level')
                         ->first();
 
             if (! \Hash::check($request->password, $user->password, [])) {
@@ -55,7 +56,8 @@ class AuthController extends Controller
                     'status_code' => 200,
                     'access_token' => $tokenResult,
                     'token_type' => 'Bearer',
-                    'username' => $user->name,
+                    'user_id' => $user->user_id,
+                    'user_name' => $user->name,
                     'user_level' => $user->level
                 ]
             ];
