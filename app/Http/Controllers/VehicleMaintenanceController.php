@@ -4,7 +4,9 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\VehicleMaintenance;
+use App\Models\Vehicle;
 use App\Http\Requests\VehicleMaintenanceRequest;
+use App\Events\VehicleMaintenanceUpdate;
 
 class VehicleMaintenanceController extends Controller
 {
@@ -35,6 +37,11 @@ class VehicleMaintenanceController extends Controller
         $newVehicleMaintenance = VehicleMaintenance::create($newData);
 
         if ($newVehicleMaintenance->maintenance_id != '') {
+            $vehicleName = Vehicle::where('vehicle_id',$newData['vehicle_id'])->select('name')->first();
+
+            //Broadcast to Front End Listener
+            broadcast(new VehicleMaintenanceUpdate("Vehicle Maintenance for ".$vehicleName->name." has been created"));
+
             return response()->json([
                 'msg' => 'Vehicle maintenance has been created',
                 'newVehicleMaintenanceId' => $newVehicleMaintenance->maintenance_id
@@ -76,6 +83,11 @@ class VehicleMaintenanceController extends Controller
         $dataUpdate = VehicleMaintenance::findOrFail($id);
 
         if ($dataUpdate->update($newData)) {
+            $vehicleName = Vehicle::where('vehicle_id',$newData['vehicle_id'])->select('name')->first();
+
+            //Broadcast to Front End Listener
+            broadcast(new VehicleMaintenanceUpdate("Vehicle Maintenance for ".$vehicleName->name." has been updated"));
+
             return response()->json([
                 'msg' => 'Vehicle maintenance has been updated',
                 'updatedVehicleMaintenanceId' => $dataUpdate->maintenance_id
@@ -98,6 +110,11 @@ class VehicleMaintenanceController extends Controller
         $deleteVehicleMaintenance = VehicleMaintenance::findOrFail($id);
 
         if ($deleteVehicleMaintenance->delete()) {
+            $vehicleName = Vehicle::where('vehicle_id',$id)->select('name')->first();
+
+            //Broadcast to Front End Listener
+            broadcast(new VehicleMaintenanceUpdate("Vehicle Maintenance for ".$vehicleName->name." has been deleted"));
+            
             return response()->json([
                 'msg' => 'Vehicle maintenance has been deleted'
             ], 200);

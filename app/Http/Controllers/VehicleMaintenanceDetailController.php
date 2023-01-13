@@ -4,7 +4,9 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\VehicleMaintenanceDetail;
+use App\Models\VehicleMaintenance;
 use App\Http\Requests\VehicleMaintenanceDetailRequest;
+use App\Events\VehicleMaintenanceDetailUpdate;
 
 class VehicleMaintenanceDetailController extends Controller
 {
@@ -34,6 +36,14 @@ class VehicleMaintenanceDetailController extends Controller
         $newVehicleMaintenanceDetail = VehicleMaintenanceDetail::create($newData);
 
         if ($newVehicleMaintenanceDetail->detail_id != '') {
+            $vehicleName = VehicleMaintenance::where('maintenance_id',$newData['maintenance_id'])
+                                            ->join('vehicles','vehicle_maintenances.vehicle_id','=','vehicles.vehicle_id')
+                                            ->select('vehicles.name')
+                                            ->first();
+
+            //Broadcast to Front End Listener
+            broadcast(new VehicleMaintenanceDetailUpdate($newData['item_name']." for ".$vehicleName->name." maintenance has been created"));
+
             return response()->json([
                 'msg' => 'Vehicle maintenance detail has been created',
                 'newVehicleMaintenanceDetailId' => $newVehicleMaintenanceDetail->detail_id
@@ -79,6 +89,14 @@ class VehicleMaintenanceDetailController extends Controller
         $dataUpdate = VehicleMaintenanceDetail::findOrFail($id);
 
         if ($dataUpdate->update($newData)) {
+            $vehicleName = VehicleMaintenance::where('maintenance_id',$newData['maintenance_id'])
+                                            ->join('vehicles','vehicle_maintenances.vehicle_id','=','vehicles.vehicle_id')
+                                            ->select('vehicles.name')
+                                            ->first();
+
+            //Broadcast to Front End Listener
+            broadcast(new VehicleMaintenanceDetailUpdate($newData['item_name']." for ".$vehicleName->name." maintenance has been updated"));
+            
             return response()->json([
                 'msg' => 'Vehicle maintenance detail has been updated',
                 'updatedVehicleMaintenanceId' => $dataUpdate->detail_id
@@ -101,6 +119,14 @@ class VehicleMaintenanceDetailController extends Controller
         $deleteVehicleMaintenanceDetail = VehicleMaintenanceDetail::findOrFail($id);
 
         if ($deleteVehicleMaintenanceDetail->delete()) {
+            $vehicleName = VehicleMaintenance::where('maintenance_id',$deleteVehicleMaintenanceDetail->maintenance_id)
+                                            ->join('vehicles','vehicle_maintenances.vehicle_id','=','vehicles.vehicle_id')
+                                            ->select('vehicles.name')
+                                            ->first();
+
+            //Broadcast to Front End Listener
+            broadcast(new VehicleMaintenanceDetailUpdate($deleteVehicleMaintenanceDetail->item_name." for ".$vehicleName->name." maintenance has been deleted"));
+
             return response()->json([
                 'msg' => 'Vehicle maintenance detail has been deleted'
             ], 200);

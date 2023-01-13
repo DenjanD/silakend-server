@@ -28,3 +28,11 @@ Broadcast::channel('role', function ($role) {
 Broadcast::channel('vehicleusage', function ($role) {
     return $role;
 });
+
+Broadcast::channel('vehiclemaintenance', function ($role) {
+    return $role;
+});
+
+Broadcast::channel('vehiclemaintenancedetail', function ($role) {
+    return $role;
+});
