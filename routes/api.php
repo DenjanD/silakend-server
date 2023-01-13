@@ -48,7 +48,7 @@ Route::middleware(['auth:sanctum','superadmin'])->group(function() {
 });
 
 /* Usage Categories API Routes */
-Route::middleware(['auth:sanctum','role::1,2'])->group(function() {
+Route::middleware(['auth:sanctum'])->group(function() {
     Route::apiResource('usagecategories', UsageCategoryController::class);
 });
 

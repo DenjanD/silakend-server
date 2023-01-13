@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Http\Requests\UsageCategoryRequest;
 use App\Models\UsageCategory;
+use Illuminate\Support\Facades\Gate;
 
 class UsageCategoryController extends Controller
 {
@@ -31,20 +32,26 @@ class UsageCategoryController extends Controller
      */
     public function store(UsageCategoryRequest $request)
     {
-        $newData = $request->all();
+        if (Gate::allows('is-superadmin') || Gate::allows('is-validator')) {   
+            $newData = $request->all();
 
-        $newUsageCategory = UsageCategory::create($newData);
+            $newUsageCategory = UsageCategory::create($newData);
 
-        if ($newUsageCategory->ucategory_id != '') {
+            if ($newUsageCategory->ucategory_id != '') {
+                return response()->json([
+                    'msg' => 'Usage category has been created',
+                    'newUsageCategoryId' => $newUsageCategory->ucategory_id
+                ], 200);
+            }
+
             return response()->json([
-                'msg' => 'Usage category has been created',
-                'newUsageCategoryId' => $newUsageCategory->ucategory_id
+                'msg' => 'Something wrong while creating new usage category'
             ], 200);
+        } else {
+            return response()->json([
+                'msg' => 'Forbidden'
+            ], 403);
         }
-
-        return response()->json([
-            'msg' => 'Something wrong while creating new usage category'
-        ], 200);
     }
 
     /**
@@ -71,20 +78,26 @@ class UsageCategoryController extends Controller
      */
     public function update(UsageCategoryRequest $request, $id)
     {
-        $newData = $request->all();
+        if (Gate::allows('is-superadmin') || Gate::allows('is-validator')) {   
+            $newData = $request->all();
 
-        $dataUpdate = UsageCategory::findOrFail($id);
+            $dataUpdate = UsageCategory::findOrFail($id);
 
-        if ($dataUpdate->update($newData)) {
+            if ($dataUpdate->update($newData)) {
+                return response()->json([
+                    'msg' => 'Usage category has been updated',
+                    'updatedUsageCategoryId' => $dataUpdate->ucategory_id
+                ], 200);
+            }
+            
             return response()->json([
-                'msg' => 'Usage category has been updated',
-                'updatedUsageCategoryId' => $dataUpdate->ucategory_id
-            ], 200);
+                'msg' => 'Something wrong while updating user category'
+            ], 500);
+        } else {
+            return response()->json([
+                'msg' => 'Forbidden'
+            ], 403);
         }
-        
-        return response()->json([
-            'msg' => 'Something wrong while updating user category'
-        ], 500);
     }
 
     /**
@@ -95,16 +108,22 @@ class UsageCategoryController extends Controller
      */
     public function destroy($id)
     {
-        $deleteUsageCategory = UsageCategory::findOrFail($id);
+        if (Gate::allows('is-superadmin') || Gate::allows('is-validator')) {
+            $deleteUsageCategory = UsageCategory::findOrFail($id);
 
-        if ($deleteUsageCategory->delete()) {
+            if ($deleteUsageCategory->delete()) {
+                return response()->json([
+                    'msg' => 'Usage category has been deleted'
+                ], 200);
+            }
+
             return response()->json([
-                'msg' => 'Usage category has been deleted'
-            ], 200);
+                'msg' => 'Something wrong while deleting usage category'
+            ], 500);
+        } else {
+            return response()->json([
+                'msg' => 'Forbidden'
+            ], 403);
         }
-
-        return response()->json([
-            'msg' => 'Something wrong while deleting usage category'
-        ], 500);
     }
 }
