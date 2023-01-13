@@ -9,7 +9,6 @@ use Illuminate\Broadcasting\PrivateChannel;
 use Illuminate\Contracts\Broadcasting\ShouldBroadcast;
 use Illuminate\Foundation\Events\Dispatchable;
 use Illuminate\Queue\SerializesModels;
-use App\Models\User;
 
 class UserUpdate implements ShouldBroadcast
 {
@@ -22,7 +21,7 @@ class UserUpdate implements ShouldBroadcast
      *
      * @return void
      */
-    public function __construct(User $user)
+    public function __construct($user)
     {
         $this->user = $user;
     }
@@ -34,6 +33,6 @@ class UserUpdate implements ShouldBroadcast
      */
     public function broadcastOn()
     {
-        return new PresenceChannel('user');
+        return new Channel('user');
     }
 }

@@ -5,6 +5,8 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Http\Requests\VehicleUsageRequest;
 use App\Models\VehicleUsage;
+use App\Models\User;
+use App\Events\VehicleUsageUpdate;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Facades\Auth;
 use Carbon\Carbon;
@@ -61,13 +63,24 @@ class VehicleUsageController extends Controller
         if (Gate::allows('is-superadmin') || Gate::allows('is-validator')) {
             $newData = $request->all();
         } else {
-            $newData = $request->all();
+            $newData['ucategory_id'] = $request->input('ucategory_id');
+            $newData['usage_description'] = $request->input('usage_description');
+            $newData['personel_count'] = $request->input('personel_count');
+            $newData['destination'] = $request->input('destination');
+            $newData['start_date'] = $request->input('start_date');
+            $newData['end_date'] = $request->input('end_date');
+            $newData['status'] = "WAITING";
             $newData['user_id'] = Auth::user()->user_id;
         }
 
         $newVehicleUsage = VehicleUsage::create($newData);
 
         if ($newVehicleUsage->usage_id != '') {
+            $userName = User::where('user_id',$newData['user_id'])->select('name')->first();
+
+            //Broadcast to Front End Listener
+            broadcast(new VehicleUsageUpdate($userName->name." has created a Vehicle Usage Request"));
+
             return response()->json([
                 'msg' => 'Vehicle usage has been created',
                 'newVehicleUsageId' => $newVehicleUsage->usage_id
@@ -163,6 +176,12 @@ class VehicleUsageController extends Controller
                 $newData['status'] = $request->input('status');
             }
         } else {
+            $newData['ucategory_id'] = $request->input('ucategory_id');
+            $newData['usage_description'] = $request->input('usage_description');
+            $newData['personel_count'] = $request->input('personel_count');
+            $newData['destination'] = $request->input('destination');
+            $newData['start_date'] = $request->input('start_date');
+            $newData['end_date'] = $request->input('end_date');
             $newData['status'] = $request->input('status');
             $newData['status_description'] = $request->input('status_description');
             $newData['user_id'] = Auth::user()->user_id;
@@ -173,6 +192,11 @@ class VehicleUsageController extends Controller
         }
         
         if ($dataUpdate->update($newData)) {
+            $userName = User::where('user_id',$newData['user_id'])->select('name')->first();
+
+            //Broadcast to Front End Listener
+            broadcast(new VehicleUsageUpdate($userName->name." has updated a Vehicle Usage Request"));
+
             return response()->json([
                 'msg' => 'Vehicle usage has been updated',
                 'updatedVehicleUsageId' => $dataUpdate->usage_id
@@ -201,6 +225,11 @@ class VehicleUsageController extends Controller
         }
 
         if ($deleteVehicleUsage->delete()) {
+            $userName = User::where('user_id',$deleteVehicleUsage->user_id)->select('name')->first();
+
+            //Broadcast to Front End Listener
+            broadcast(new VehicleUsageUpdate($userName->name." has deleted a Vehicle Usage Request"));
+
             return response()->json([
                 'msg' => 'Vehicle usage has been deleted'
             ], 200);

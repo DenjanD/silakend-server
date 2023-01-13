@@ -37,7 +37,7 @@ class RoleController extends Controller
 
         if ($newRole->role_id != '') {
             //Broadcast to Front End Listener
-            broadcast(new RoleUpdate($newRole));
+            broadcast(new RoleUpdate("Role ".$newRole['name']." has been created"));
 
             return response()->json([
                 'msg' => 'Role has been created',
@@ -78,7 +78,7 @@ class RoleController extends Controller
 
         if ($dataUpdate->update($newData)) {
             //Broadcast to Front End Listener
-            broadcast(new RoleUpdate($dataUpdate));
+            broadcast(new RoleUpdate("Role ".$newRole['name']." has been updated"));
 
             return response()->json([
                 'msg' => 'Role has been updated',
@@ -103,7 +103,7 @@ class RoleController extends Controller
 
         if ($deleteRole->delete()) {
             //Broadcast to Front End Listener
-            broadcast(new RoleUpdate($deleteRole));
+            broadcast(new RoleUpdate("Role ".$newRole['name']." has been deleted"));
 
             return response()->json([
                 'msg' => 'Role has been deleted',

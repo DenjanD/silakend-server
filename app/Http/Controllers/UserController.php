@@ -76,7 +76,7 @@ class UserController extends Controller
             UserRole::create($newUserRole);
 
             //Broadcast to Front End Listener
-            broadcast(new UserUpdate($newUser));
+            broadcast(new UserUpdate("User ".$newData['name']." has been created"));
 
             return response()->json([
                 'msg' => 'User has been created',
@@ -163,7 +163,7 @@ class UserController extends Controller
             $deleteUser = User::findOrFail($id);
             if ($deleteUser->delete()) {
                 //Broadcast to Front End Listener
-                broadcast(new UserUpdate($deleteUser));
+                broadcast(new UserUpdate("User ".$newData['name']." has been deleted"));
 
                 return response()->json([
                     'msg' => 'User has been deleted'
@@ -219,7 +219,7 @@ class UserController extends Controller
         // Update User's data
         if ($dataUpdate->update($newData)) {
             //Broadcast to Front End Listener
-            broadcast(new UserUpdate($dataUpdate));
+            broadcast(new UserUpdate("User ".$newData['name']." has been updated"));
 
             return response()->json([
                 'msg' => 'User has been updated',

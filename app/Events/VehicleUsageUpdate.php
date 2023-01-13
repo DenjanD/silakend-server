@@ -10,20 +10,20 @@ use Illuminate\Contracts\Broadcasting\ShouldBroadcast;
 use Illuminate\Foundation\Events\Dispatchable;
 use Illuminate\Queue\SerializesModels;
 
-class RoleUpdate implements ShouldBroadcast
+class VehicleUsageUpdate implements ShouldBroadcast
 {
     use Dispatchable, InteractsWithSockets, SerializesModels;
 
-    public $role;
+    public $vehicleUsage;
 
     /**
      * Create a new event instance.
      *
      * @return void
      */
-    public function __construct($role)
+    public function __construct($vehicleUsage)
     {
-        $this->role = $role;
+        $this->vehicleUsage = $vehicleUsage;
     }
 
     /**
@@ -33,6 +33,6 @@ class RoleUpdate implements ShouldBroadcast
      */
     public function broadcastOn()
     {
-        return new Channel('role');
+        return new Channel('vehicleusage');
     }
 }

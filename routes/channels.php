@@ -24,3 +24,7 @@ Broadcast::channel('user', function ($user) {
 Broadcast::channel('role', function ($role) {
     return $role;
 });
+
+Broadcast::channel('vehicleusage', function ($role) {
+    return $role;
+});
