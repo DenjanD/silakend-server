@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Http\Requests\VehicleCategoryRequest;
 use App\Models\VehicleCategory;
+use App\Events\VehicleCategoryUpdate;
 
 class VehicleCategoryController extends Controller
 {
@@ -33,6 +34,9 @@ class VehicleCategoryController extends Controller
         $newVehicleCategory = VehicleCategory::create($newData);
 
         if ($newVehicleCategory->vcategory_id != '') {
+            //Broadcast to Front End Listener
+            broadcast(new VehicleCategoryUpdate($newVehicleCategory->name." Vehicle Category has been created"));
+
             return response()->json([
                 'msg' => 'Vehicle category has been created',
                 'newVehicleCategoryId' => $newVehicleCategory->vcategory_id
@@ -73,6 +77,9 @@ class VehicleCategoryController extends Controller
         $dataUpdate = VehicleCategory::findOrFail($id);
 
         if ($dataUpdate->update($newData)) {
+            //Broadcast to Front End Listener
+            broadcast(new VehicleCategoryUpdate($dataUpdate->name." Vehicle Category has been updated"));
+
             return response()->json([
                 'msg' => 'Vehicle category has been updated',
                 'updatedVehicleCategoryId' => $dataUpdate->vcategory_id
@@ -95,6 +102,9 @@ class VehicleCategoryController extends Controller
         $deleteVehicleCategory = VehicleCategory::findOrFail($id);
 
         if ($deleteVehicleCategory->delete()) {
+            //Broadcast to Front End Listener
+            broadcast(new VehicleCategoryUpdate($deleteVehicleCategory->name." Vehicle Category has been deleted"));
+
             return response()->json([
                 'msg' => 'Vehicle category has been deleted'
             ], 200);

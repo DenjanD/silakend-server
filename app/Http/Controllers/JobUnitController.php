@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Http\Requests\JobUnitRequest;
 use App\Models\JobUnit;
+use App\Events\JobUnitUpdate;
 
 class JobUnitController extends Controller
 {
@@ -36,6 +37,9 @@ class JobUnitController extends Controller
         $newJobUnit = JobUnit::create($newData);
 
         if ($newJobUnit->unit_id != '') {
+            //Broadcast to Front End Listener
+            broadcast(new JobUnitUpdate($newJobUnit->name." Job Unit has been created"));
+
             return response()->json([
                 'msg' => 'Job Unit has been created',
                 'newJobUnitId' => $newJobUnit->unit_id
@@ -74,6 +78,9 @@ class JobUnitController extends Controller
         $dataUpdate = JobUnit::findOrFail($id);
 
         if ($dataUpdate->update($newData)) {
+            //Broadcast to Front End Listener
+            broadcast(new JobUnitUpdate($dataUpdate->name." Job Unit has been updated"));
+
             return response()->json([
                 'msg' => 'Job Unit has been updated',
                 'updatedJobUnitId' => $dataUpdate->unit_id
@@ -96,6 +103,9 @@ class JobUnitController extends Controller
         $deleteJobUnit = JobUnit::findOrFail($id);
 
         if ($deleteJobUnit->delete()) {
+            //Broadcast to Front End Listener
+            broadcast(new JobUnitUpdate($deleteJobUnit->name." Job Unit has been deleted"));
+
             return response()->json([
                 'msg' => 'Job unit has been deleted'
             ], 200);

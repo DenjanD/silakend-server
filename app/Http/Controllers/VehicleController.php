@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use App\Http\Requests\VehicleRequest;
 use App\Models\Vehicle;
 use Illuminate\Support\Facades\Gate;
+use App\Events\VehicleUpdate;
 
 class VehicleController extends Controller
 {
@@ -37,6 +38,9 @@ class VehicleController extends Controller
             $newVehicle = Vehicle::create($newData);
 
             if ($newVehicle->vehicle_id != '') {
+                //Broadcast to Front End Listener
+                broadcast(new VehicleUpdate($newVehicle->name." Vehicle has been created"));
+
                 return response()->json([
                     'msg' => 'Vehicle has been created',
                     'newVehicleId' => $newVehicle->vehicle_id
@@ -81,6 +85,9 @@ class VehicleController extends Controller
             $dataUpdate = Vehicle::findOrFail($id);
 
             if ($dataUpdate->update($newData)) {
+                //Broadcast to Front End Listener
+                broadcast(new VehicleUpdate($dataUpdate->name." Vehicle has been updated"));
+                
                 return response()->json([
                     'msg' => 'Vehicle has been updated',
                     'updatedVehicleId' => $dataUpdate->vehicle_id
@@ -109,6 +116,9 @@ class VehicleController extends Controller
             $deleteVehicle = Vehicle::findOrFail($id);
 
             if ($deleteVehicle->delete()) {
+                //Broadcast to Front End Listener
+                broadcast(new VehicleUpdate($deleteVehicle->name." Vehicle has been deleted"));
+                
                 return response()->json([
                     'msg' => 'Vehicle has been deleted'
                 ], 200);

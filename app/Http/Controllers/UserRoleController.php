@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Http\Requests\UserRoleRequest;
 use App\Models\UserRole;
+use App\Events\UserRoleUpdate;
 
 class UserRoleController extends Controller
 {
@@ -33,6 +34,9 @@ class UserRoleController extends Controller
         $newUserRole = UserRole::create($newData);
 
         if ($newUserRole->user_role_id != '') {
+            //Broadcast to Front End Listener
+            broadcast(new UserRoleUpdate("New User Role has been created"));
+
             return response()->json([
                 'msg' => 'User role has been created',
                 'newUserRoleId' => $newUserRole->user_role_id
@@ -73,6 +77,9 @@ class UserRoleController extends Controller
         $dataUpdate = UserRole::findOrFail($id);
 
         if ($dataUpdate->update($newData)) {
+            //Broadcast to Front End Listener
+            broadcast(new UserRoleUpdate("User Role has been updated"));
+
             return response()->json([
                 'msg' => 'User Role has been updated',
                 'updatedUserRoleId' => $dataUpdate->user_role_id
@@ -95,6 +102,9 @@ class UserRoleController extends Controller
         $deleteUserRole = UserRole::findOrFail($id);
 
         if ($deleteUserRole->delete()) {
+            //Broadcast to Front End Listener
+            broadcast(new UserRoleUpdate("User Role has been deleted"));
+
             return response()->json([
                 'msg' => 'User role has been deleted'
             ], 200);

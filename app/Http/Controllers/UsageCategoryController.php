@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use App\Http\Requests\UsageCategoryRequest;
 use App\Models\UsageCategory;
 use Illuminate\Support\Facades\Gate;
+use App\Events\UsageCategoryUpdate;
 
 class UsageCategoryController extends Controller
 {
@@ -38,6 +39,10 @@ class UsageCategoryController extends Controller
             $newUsageCategory = UsageCategory::create($newData);
 
             if ($newUsageCategory->ucategory_id != '') {
+                //Broadcast to Front End Listener
+                broadcast(new UsageCategoryUpdate($newUsageCategory->name." Usage Category has been created"));
+
+
                 return response()->json([
                     'msg' => 'Usage category has been created',
                     'newUsageCategoryId' => $newUsageCategory->ucategory_id
@@ -84,6 +89,9 @@ class UsageCategoryController extends Controller
             $dataUpdate = UsageCategory::findOrFail($id);
 
             if ($dataUpdate->update($newData)) {
+                //Broadcast to Front End Listener
+                broadcast(new UsageCategoryUpdate($dataUpdate->name." Usage Category has been updated"));
+
                 return response()->json([
                     'msg' => 'Usage category has been updated',
                     'updatedUsageCategoryId' => $dataUpdate->ucategory_id
@@ -112,6 +120,9 @@ class UsageCategoryController extends Controller
             $deleteUsageCategory = UsageCategory::findOrFail($id);
 
             if ($deleteUsageCategory->delete()) {
+                //Broadcast to Front End Listener
+                broadcast(new UsageCategoryUpdate($deleteUsageCategory->name." Usage Category has been deleted"));
+
                 return response()->json([
                     'msg' => 'Usage category has been deleted'
                 ], 200);

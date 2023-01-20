@@ -39,6 +39,7 @@ class VehicleUsageController extends Controller
             ,'depart_date','depart_time','arrive_date','arrive_time','distance_count_out'
             ,'distance_count_in','vehicle_usages.status','status_description')
             ->where('driver_id', Auth::user()->user_id)
+            ->where('vehicle_usages.status','READY')
             ->get();
         } else {
             $vehicleUsageData = VehicleUsage::with(['user','vehicle','driver','category'])->select('usage_id','vehicle_id','driver_id','user_id','ucategory_id'
@@ -62,16 +63,19 @@ class VehicleUsageController extends Controller
     {
         if (Gate::allows('is-superadmin') || Gate::allows('is-validator')) {
             $newData = $request->all();
-        } else {
-            $newData['ucategory_id'] = $request->input('ucategory_id');
-            $newData['usage_description'] = $request->input('usage_description');
-            $newData['personel_count'] = $request->input('personel_count');
-            $newData['destination'] = $request->input('destination');
-            $newData['start_date'] = $request->input('start_date');
-            $newData['end_date'] = $request->input('end_date');
+        } else if (Gate::allows('is-verifier')) {
+            $newData['status'] = "APPROVED";
+        } 
+        else {
             $newData['status'] = "WAITING";
-            $newData['user_id'] = Auth::user()->user_id;
         }
+        $newData['ucategory_id'] = $request->input('ucategory_id');
+        $newData['usage_description'] = $request->input('usage_description');
+        $newData['personel_count'] = $request->input('personel_count');
+        $newData['destination'] = $request->input('destination');
+        $newData['start_date'] = $request->input('start_date');
+        $newData['end_date'] = $request->input('end_date');
+        $newData['user_id'] = Auth::user()->user_id;
 
         $newVehicleUsage = VehicleUsage::create($newData);
 
@@ -157,6 +161,7 @@ class VehicleUsageController extends Controller
             $dataUpdate = VehicleUsage::join('users','users.user_id','=','vehicle_usages.user_id')
                                         ->where('usage_id', $id)
                                         ->where('users.unit_id', Auth::user()->jobUnit->unit_id)
+                                        ->where('vehicle_usages.status','WAITING')
                                         ->first();
         } else if (Gate::allows('is-driver')) {
             $newData['status'] = $request->input('status');
@@ -167,6 +172,8 @@ class VehicleUsageController extends Controller
 
             $dataUpdate = VehicleUsage::where('usage_id', $id)
                                         ->where('driver_id', Auth::user()->user_id)
+                                        ->where('status','READY')
+                                        ->orWhere('status','PROGRESS')
                                         ->first();
             
             if ($dataUpdate->depart_date != '' && $dataUpdate->depart_time != '') {
@@ -188,6 +195,7 @@ class VehicleUsageController extends Controller
 
             $dataUpdate = VehicleUsage::where('user_id', Auth::user()->user_id)
                                         ->where('usage_id', $id)
+                                        ->where('status','WAITING')
                                         ->first();
         }
         
