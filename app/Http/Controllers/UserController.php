@@ -28,9 +28,11 @@ class UserController extends Controller
                         ->select('user_id','nip','name','address','phone','email','unit_id')
                         ->get();
         } else if (Gate::allows('is-validator')) {
-            $userData = User::with('jobUnit')
+            $userData = User::with(['jobUnit', 'role'])
                         ->select('user_id','nip','name','address','phone','email','unit_id')
-                        ->get();
+                        ->whereHas('role', function($role) {
+                            $role->where('level', '!=', 1);
+                        })->get();
         } else if (Gate::allows('is-verifier')) {
             $userData = User::with('jobUnit')
                         ->select('user_id','nip','name','address','phone','email','unit_id')

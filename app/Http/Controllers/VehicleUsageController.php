@@ -40,6 +40,8 @@ class VehicleUsageController extends Controller
             ,'distance_count_in','vehicle_usages.status','status_description')
             ->where('driver_id', Auth::user()->user_id)
             ->where('vehicle_usages.status','READY')
+            ->orWhere('vehicle_usages.status','PROGRESS')
+            ->orWhere('vehicle_usages.status','DONE')
             ->get();
         } else {
             $vehicleUsageData = VehicleUsage::with(['user','vehicle','driver','category'])->select('usage_id','vehicle_id','driver_id','user_id','ucategory_id'
@@ -200,7 +202,7 @@ class VehicleUsageController extends Controller
         }
         
         if ($dataUpdate->update($newData)) {
-            $userName = User::where('user_id',$newData['user_id'])->select('name')->first();
+            $userName = User::where('user_id',$dataUpdate->user_id)->select('name')->first();
 
             //Broadcast to Front End Listener
             broadcast(new VehicleUsageUpdate($userName->name." has updated a Vehicle Usage Request"));
