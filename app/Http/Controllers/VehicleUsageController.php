@@ -194,8 +194,8 @@ class VehicleUsageController extends Controller
             $dataUpdate = VehicleUsage::findOrFail($id);
         } else if (Gate::allows('is-validator')) {
             $newData = $request->validate([
-                'vehicle_id' => 'required|exists:App\Models\Vehicle,vehicle_id',
-                'driver_id' => 'required|exists:App\Models\User,user_id',
+                'vehicle_id' => 'nullable|exists:App\Models\Vehicle,vehicle_id',
+                'driver_id' => 'nullable|exists:App\Models\User,user_id',
                 'user_id' => 'prohibited',
                 'ucategory_id' => 'prohibited',
                 'usage_description' => 'prohibited',
@@ -244,6 +244,7 @@ class VehicleUsageController extends Controller
                                         ->where('usage_id', $id)
                                         ->where('users.unit_id', Auth::user()->jobUnit->unit_id)
                                         ->where('vehicle_usages.status','WAITING')
+                                        ->orWhere('vehicle_usages.status','APPROVED')
                                         ->first();
         } else if (Gate::allows('is-driver')) {
             $newData = $request->validate([
@@ -293,7 +294,7 @@ class VehicleUsageController extends Controller
                 'usage_description' => 'required|string',
                 'personel_count' => 'required|integer|digits_between:1,11',
                 'destination' => 'required|string',
-                'start_date' => 'required|date|before_or_equal:'.now()->format('Y-m-d'),
+                'start_date' => 'required|date|after_or_equal:'.now()->format('Y-m-d'),
                 'end_date' => 'required|date|after_or_equal:start_date',
                 'depart_date' => 'prohibited',
                 'depart_time' => 'prohibited',
