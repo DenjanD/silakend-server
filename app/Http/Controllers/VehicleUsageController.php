@@ -84,7 +84,7 @@ class VehicleUsageController extends Controller
                 'arrive_date' => 'nullable|date',
                 'arrive_time' => 'nullable|date_format:H:i',
                 'distance_count_out' => 'nullable|integer|min:0',
-                'distance_count_in' => 'nullable|integer|min:0',
+                'distance_count_in' => 'nullable|integer|min:0|gte:distance_count_out',
                 'status' => 'required|in:WAITING,APPROVED,READY,PROGRESS,DONE,CANCELED,REJECTED',
                 'status_description' => 'nullable|string'
             ]);
@@ -229,7 +229,7 @@ class VehicleUsageController extends Controller
                 'usage_description' => 'required|string',
                 'personel_count' => 'required|integer|digits_between:1,11',
                 'destination' => 'required|string',
-                'start_date' => 'required|date|after_or_equal:'.now()->format('Y-m-d'),
+                'start_date' => 'required|date',
                 'end_date' => 'required|date|after_or_equal:start_date',
                 'depart_date' => 'prohibited',
                 'depart_time' => 'prohibited',
@@ -262,7 +262,7 @@ class VehicleUsageController extends Controller
                 'arrive_date' => 'prohibited',
                 'arrive_time' => 'prohibited',
                 'distance_count_out' => 'required|integer',
-                'distance_count_in' => 'nullable|integer',
+                'distance_count_in' => 'nullable|integer|gte:distance_count_out',
                 'status' => 'required|in:PROGRESS,DONE',
                 'status_description' => 'prohibited'
             ]);
@@ -274,6 +274,14 @@ class VehicleUsageController extends Controller
                                         ->where('status','READY')
                                         ->orWhere('status','PROGRESS')
                                         ->first();
+            
+            $validateVehicleDistance = Vehicle::where('vehicle_id',$dataUpdate->vehicle_id)->select('distance_count')->first();
+
+            if ($newData['distance_count_out'] < $validateVehicleDistance->distance_count) {
+                return response()->json([
+                    'msg' => "Jumlah kilometer keluar tidak boleh kurang dari total odometer kendaraan!"
+                ], 422);
+            }
             
             if ($dataUpdate->depart_date != '' && $dataUpdate->depart_time != '') {
                 //Update selected vehicle distance_count
@@ -317,7 +325,7 @@ class VehicleUsageController extends Controller
             $userName = User::where('user_id',$dataUpdate->user_id)->select('name')->first();
 
             //Broadcast to Front End Listener
-            broadcast(new VehicleUsageUpdate($userName->name." telah memperbaharui pengajuan peminjaman kendaraan"));
+            broadcast(new VehicleUsageUpdate(Auth::user()->name." telah memperbaharui pengajuan peminjaman kendaraan"));
 
             return response()->json([
                 'msg' => 'Vehicle usage has been updated',
